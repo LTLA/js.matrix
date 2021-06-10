@@ -36,29 +36,32 @@
           // instance.delete();
 
           // eventually figured out the Module initialized memory space
-          Module["wasmMemory"] = Module["asm"]["memory"];
 
-          let offset = 0;
+          let ptr = Module._malloc(n*8);
           const mat0 = new Float64Array(
-            Module["wasmMemory"].buffer,
-            offset,
-            n
+            Module.HEAPF64.buffer,
+            ptr,
+            1000
           );
+          console.log("Offset is " + ptr);
           mat0.set(mat0.map(() => getRandomArbitrary()));
-          
+          console.log(mat0[0]);
+
           var nrow = 50, ncol = 20;
 
-          var instance = new Module.NumericMatrix(nrow, ncol, mat0.byteOffset);
+          var instance = new Module.NumericMatrix(nrow, ncol, ptr);
           console.log('Matrix dimensions: ' + instance.nrow() + ' ' + instance.ncol());
 
-          offset += mat0.byteLength;
+          var rptr = Module._malloc(8 * ncol);
           const dim = new Float64Array(
-            Module["wasmMemory"].buffer,
-            offset,
+            Module.HEAPF64.buffer,
+            rptr,
             ncol
           );
-          instance.column(0, dim.byteOffset);
-          console.log("First matrix entry: " + dim[0]);
+          console.log("Offset is " + rptr);
+          console.log("Matrix entry before: " + dim[0]);
+          instance.row(0, rptr);
+          console.log("Matrix entry after: " + dim[0]);
 
           instance.delete();
         }
