@@ -4,14 +4,15 @@
 template<typename T>
 class JSVector {
 public:
+    JSVector() {}
     JSVector(const T* p, size_t n) : ptr(p), num(n) {}
     size_t size() const { return num; }
     const T* data() const { return ptr; }
     const T* begin() const { return ptr; }
     const T* end() const { return ptr + num; }
 private:
-    const T* ptr;
-    size_t num;
+    const T* ptr = NULL;
+    size_t num = 0;
 };
 
 class NumericMatrix {
